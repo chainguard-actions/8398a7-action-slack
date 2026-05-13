@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v3.18.0 | [`v3.18.0`](https://github.com/chainguard-actions/action-slack/tree/v3.18.0) | — |
+| v3.19.0 | [`v3.19.0`](https://github.com/chainguard-actions/action-slack/tree/v3.19.0) | — |
 
 ## Privacy
 
