@@ -1,0 +1,7 @@
+{
+  "owner": "8398a7",
+  "name": "action-slack",
+  "visibility": "internal",
+  "description": "You can notify slack of GitHub Actions.",
+  "block_publish": false
+}
