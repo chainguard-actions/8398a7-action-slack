@@ -1,4 +1,4 @@
-name: Test custom payload input
+name: Test basic status input
 on:
   workflow_dispatch:
 jobs:
@@ -13,19 +13,11 @@ jobs:
       - id: action
         uses: .
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom test notification",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Test passed"
-                }
-              ]
-            }
+          status: success
+          fields: repo,commit,author
+          author_name: test-bot
         continue-on-error: true
-      - name: Assert action ran with custom_payload input
+      - name: Assert action ran (webhook may fail with fake URL)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
@@ -34,4 +26,4 @@ jobs:
             echo "FAIL: action was skipped unexpectedly"
             exit 1
           fi
-          echo "PASS: action ran with custom_payload input"
+          echo "PASS: action ran with status=success input"
