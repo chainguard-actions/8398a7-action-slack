@@ -1,4 +1,4 @@
-name: Test custom payload notification
+name: Test custom payload input
 on:
   workflow_dispatch:
 jobs:
@@ -7,17 +7,18 @@ jobs:
     env:
       GITHUB_REF: refs/heads/main
       GITHUB_EVENT_NAME: push
-      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: action
         uses: .
         continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
         with:
           status: custom
           custom_payload: |
             {
-              "text": "Custom test notification from act",
+              "text": "Custom notification from test",
               "attachments": [
                 {
                   "color": "good",
@@ -27,5 +28,5 @@ jobs:
             }
       - name: Assert action ran with custom_payload input
         run: |
-          echo "Action step completed (continue-on-error allows webhook failures)"
-          echo "PASS: custom_payload input was accepted by the action"
+          echo "Action step completed (continue-on-error allows webhook failure)"
+          echo "PASS: custom_payload input was accepted"
