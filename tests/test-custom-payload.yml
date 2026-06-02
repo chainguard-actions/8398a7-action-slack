@@ -1,4 +1,4 @@
-name: Test custom payload input
+name: Test custom_payload input
 on:
   workflow_dispatch:
 jobs:
@@ -7,31 +7,47 @@ jobs:
     env:
       GITHUB_REF: refs/heads/main
       GITHUB_EVENT_NAME: push
-      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Start mock Slack webhook server
+        run: |
+          python3 -c "
+          import http.server, threading
+
+          class Handler(http.server.BaseHTTPRequestHandler):
+              def do_POST(self):
+                  length = int(self.headers.get('Content-Length', 0))
+                  body = self.rfile.read(length)
+                  print('Mock webhook received:', body.decode())
+                  self.send_response(200)
+                  self.end_headers()
+                  self.wfile.write(b'ok')
+              def log_message(self, fmt, *args):
+                  pass
+
+          server = http.server.HTTPServer(('127.0.0.1', 9998), Handler)
+          print('Mock webhook server listening on port 9998')
+          server.serve_forever()
+          " &
+          sleep 1
+
       - id: action
         uses: .
         with:
           status: custom
           custom_payload: |
             {
-              "text": "Custom test notification",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Test passed"
-                }
-              ]
+              text: 'Custom notification from test',
+              attachments: [{
+                color: 'good',
+                text: 'Test passed'
+              }]
             }
-        continue-on-error: true
-      - name: Assert action ran with custom_payload input
         env:
-          OUTCOME: ${{ steps.action.outcome }}
+          SLACK_WEBHOOK_URL: http://127.0.0.1:9998/webhook
+
+      - name: Assert action succeeded with custom payload
         run: |
-          echo "action outcome: $OUTCOME"
-          if [ "$OUTCOME" = "skipped" ]; then
-            echo "FAIL: action was skipped unexpectedly"
-            exit 1
-          fi
-          echo "PASS: action ran with custom_payload input"
+          echo "Action completed successfully with status=custom and custom_payload"
+          echo "PASS"
