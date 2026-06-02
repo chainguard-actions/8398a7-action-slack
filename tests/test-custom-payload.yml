@@ -1,4 +1,4 @@
-name: Test custom_payload input
+name: Test custom payload input
 on:
   workflow_dispatch:
 jobs:
@@ -7,6 +7,7 @@ jobs:
     env:
       GITHUB_REF: refs/heads/main
       GITHUB_EVENT_NAME: push
+      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: action
@@ -17,22 +18,16 @@ jobs:
           custom_payload: |
             {
               "text": "Custom notification from test",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Test passed"
-                }
-              ]
+              "attachments": []
             }
-        env:
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
+          github_token: ${{ github.token }}
       - name: Assert action was invoked with custom_payload input
         run: |
-          echo "outcome: ${{ steps.action.outcome }}"
-          # The action ran (success or failure due to invalid webhook is acceptable)
-          # What matters is that the 'custom_payload' input was passed and the action was invoked
-          if [ "${{ steps.action.outcome }}" = "" ]; then
-            echo "FAIL: action step did not run at all"
+          echo "Action step outcome: ${{ steps.action.outcome }}"
+          # The action may fail due to fake webhook URL, but it must have been invoked
+          # If outcome is 'skipped', that means the action was not invoked at all
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action step was skipped, expected it to run"
             exit 1
           fi
-          echo "PASS: action was invoked with status=custom and custom_payload"
+          echo "PASS: action was invoked with custom_payload input"
