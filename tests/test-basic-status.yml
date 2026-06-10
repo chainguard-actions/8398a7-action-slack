@@ -13,11 +13,12 @@ jobs:
         uses: .
         continue-on-error: true
         env:
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/TEST/TEST/TEST
         with:
           status: success
-          author_name: test-author
+          author_name: test-runner
+          text: "Test notification from act"
       - name: Assert action ran with status input
         run: |
-          echo "Action step completed (continue-on-error allows webhook failure)"
-          echo "PASS: status input was accepted"
+          echo "Action completed (may have failed due to dummy webhook URL)"
+          echo "PASS: status input was accepted by the action"

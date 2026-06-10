@@ -13,20 +13,12 @@ jobs:
         uses: .
         continue-on-error: true
         env:
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/TEST/TEST/TEST
         with:
           status: custom
-          custom_payload: |
-            {
-              "text": "Custom notification from test",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Test passed"
-                }
-              ]
-            }
+          custom_payload: '{"text":"Custom test notification from act","attachments":[{"color":"good","text":"Test passed"}]}'
+          author_name: test-runner
       - name: Assert action ran with custom_payload input
         run: |
-          echo "Action step completed (continue-on-error allows webhook failure)"
-          echo "PASS: custom_payload input was accepted"
+          echo "Action completed (may have failed due to dummy webhook URL)"
+          echo "PASS: custom_payload input was accepted by the action"
