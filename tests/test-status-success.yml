@@ -1,4 +1,4 @@
-name: Test custom_payload input
+name: Test status input (success)
 on:
   workflow_dispatch:
 jobs:
@@ -14,17 +14,9 @@ jobs:
         uses: .
         continue-on-error: true
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom test notification from act",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "All tests passed"
-                }
-              ]
-            }
+          status: success
+          author_name: test-author
+          text: Test notification from act
 
       - name: Assert action ran (expected to fail without webhook URL)
         env:
@@ -36,4 +28,4 @@ jobs:
             echo "FAIL: expected outcome to be 'failure' or 'success', got '$OUTCOME'"
             exit 1
           fi
-          echo "PASS: action ran with custom_payload input"
+          echo "PASS: action ran with status input"
