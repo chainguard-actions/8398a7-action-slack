@@ -1,4 +1,4 @@
-name: Test basic status input
+name: Test basic usage - status input
 on:
   workflow_dispatch:
 jobs:
@@ -7,23 +7,24 @@ jobs:
     env:
       GITHUB_REF: refs/heads/main
       GITHUB_EVENT_NAME: push
-      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Verify status input is accepted (expect failure without real webhook)
+        id: action
         uses: .
         with:
           status: success
-          fields: repo,commit,author
-          author_name: test-bot
+          author_name: test-author
+        env:
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/FAKE/FAKE/FAKE
         continue-on-error: true
-      - name: Assert action ran (webhook may fail with fake URL)
+      - name: Assert action ran (outcome is either success or failure, not skipped)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "action outcome: $OUTCOME"
+          echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "skipped" ]; then
-            echo "FAIL: action was skipped unexpectedly"
+            echo "FAIL: action was skipped, expected it to run"
             exit 1
           fi
-          echo "PASS: action ran with status=success input"
+          echo "PASS: action ran with status input"
