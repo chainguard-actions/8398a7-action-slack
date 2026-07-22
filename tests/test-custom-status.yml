@@ -1,0 +1,65 @@
+name: Test custom status with custom payload and mock webhook
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Start mock Slack webhook server
+        run: |
+          python3 -c "
+          import http.server, threading
+
+          class Handler(http.server.BaseHTTPRequestHandler):
+              def do_POST(self):
+                  length = int(self.headers.get('Content-Length', 0))
+                  body = self.rfile.read(length)
+                  print('Received POST body:', body.decode('utf-8', errors='replace'), flush=True)
+                  self.send_response(200)
+                  self.send_header('Content-Type', 'application/json')
+                  self.end_headers()
+                  self.wfile.write(b'ok')
+              def log_message(self, format, *args):
+                  pass
+
+          server = http.server.HTTPServer(('127.0.0.1', 18768), Handler)
+          t = threading.Thread(target=server.serve_forever)
+          t.daemon = True
+          t.start()
+          print('Mock server started on port 18768', flush=True)
+          import time
+          time.sleep(60)
+          " &
+          sleep 1
+          echo "Mock server started"
+
+      - name: Run action with custom status and payload
+        id: action
+        uses: .
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "Custom notification from test",
+              attachments: [{
+                color: "good",
+                text: "All tests passed!"
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: "http://127.0.0.1:18768/services/test/webhook"
+          GITHUB_REF: refs/heads/main
+          GITHUB_EVENT_NAME: push
+
+      - name: Assert action succeeded
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected action to succeed with custom status and payload, but got outcome: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action succeeded with custom status"

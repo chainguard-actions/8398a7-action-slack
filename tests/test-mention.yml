@@ -1,4 +1,4 @@
-name: Test custom payload notification
+name: Test mention on failure notification
 on:
   workflow_dispatch:
 jobs:
@@ -49,20 +49,14 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: http://127.0.0.1:9999/webhook
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom notification from CI",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Custom payload test"
-                }
-              ]
-            }
+          status: failure
+          mention: here
+          if_mention: failure
+          text: "Build failed - mentioning here"
+          author_name: test-ci
           github_token: "fake-token-for-testing"
 
-      - name: Assert custom payload was sent
+      - name: Assert mention is included in payload
         run: |
           if [ ! -f /tmp/slack_payload.json ]; then
             echo "FAIL: No payload was sent to mock server"
@@ -74,10 +68,11 @@ jobs:
           import json, sys
           with open('/tmp/slack_payload.json') as f:
               data = json.load(f)
-          text = data.get('text', '')
-          print('Text:', text)
-          if 'Custom notification from CI' not in text:
-              print('Expected custom text in payload')
+          payload_str = json.dumps(data)
+          print('Full payload:', payload_str)
+          # Check that <!here> mention is present somewhere in the payload
+          if '<!here>' not in payload_str:
+              print('Expected <!here> mention in payload')
               sys.exit(1)
-          print('PASS: custom text found')
+          print('PASS: mention found in payload')
           "

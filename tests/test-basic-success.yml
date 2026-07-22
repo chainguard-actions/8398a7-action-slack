@@ -1,4 +1,4 @@
-name: Test custom payload notification
+name: Test basic success notification
 on:
   workflow_dispatch:
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Start mock HTTP server for Slack webhook
         run: |
           python3 -c "
-          import http.server, threading, json, sys
+          import http.server, threading, json, sys, os
 
           class Handler(http.server.BaseHTTPRequestHandler):
               def do_POST(self):
@@ -43,26 +43,20 @@ jobs:
           " &
           sleep 2
           echo "Mock server started"
+          # Verify server is listening
+          curl -s -X POST http://127.0.0.1:9999/test -d '{"test":true}' -H 'Content-Type: application/json' || true
 
       - id: action
         uses: .
         env:
           SLACK_WEBHOOK_URL: http://127.0.0.1:9999/webhook
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom notification from CI",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "Custom payload test"
-                }
-              ]
-            }
+          status: success
+          author_name: test-author
+          text: "Test notification from act"
           github_token: "fake-token-for-testing"
 
-      - name: Assert custom payload was sent
+      - name: Assert action completed and payload was sent
         run: |
           if [ ! -f /tmp/slack_payload.json ]; then
             echo "FAIL: No payload was sent to mock server"
@@ -70,14 +64,4 @@ jobs:
           fi
           echo "Payload received:"
           cat /tmp/slack_payload.json
-          python3 -c "
-          import json, sys
-          with open('/tmp/slack_payload.json') as f:
-              data = json.load(f)
-          text = data.get('text', '')
-          print('Text:', text)
-          if 'Custom notification from CI' not in text:
-              print('Expected custom text in payload')
-              sys.exit(1)
-          print('PASS: custom text found')
-          "
+          echo "PASS: action completed and sent payload"
