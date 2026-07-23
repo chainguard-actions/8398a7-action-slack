@@ -1,4 +1,4 @@
-name: Test custom payload notification
+name: Test mention notification
 on:
   workflow_dispatch:
 jobs:
@@ -13,17 +13,11 @@ jobs:
       - id: action
         uses: .
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom test notification from act",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "All tests passed!"
-                }
-              ]
-            }
+          status: failure
+          mention: here
+          if_mention: failure
+          author_name: test-author
+          text: "Mentioning @here on failure"
         continue-on-error: true
       - name: Assert action was invoked
         env:

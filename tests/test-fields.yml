@@ -1,4 +1,4 @@
-name: Test custom payload notification
+name: Test fields in notification
 on:
   workflow_dispatch:
 jobs:
@@ -13,17 +13,10 @@ jobs:
       - id: action
         uses: .
         with:
-          status: custom
-          custom_payload: |
-            {
-              "text": "Custom test notification from act",
-              "attachments": [
-                {
-                  "color": "good",
-                  "text": "All tests passed!"
-                }
-              ]
-            }
+          status: success
+          fields: repo,commit,author,action,eventName,ref,workflow,job,took
+          author_name: test-author
+          success_message: ":white_check_mark: Test with fields\n"
         continue-on-error: true
       - name: Assert action was invoked
         env:

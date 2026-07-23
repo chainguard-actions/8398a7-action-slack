@@ -1,0 +1,66 @@
+name: Test success status with mock webhook
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Start mock Slack webhook server
+        run: |
+          # Start a simple HTTP server that accepts POST and returns 200 ok
+          python3 -c "
+          import http.server, threading, json, sys
+
+          class Handler(http.server.BaseHTTPRequestHandler):
+              def do_POST(self):
+                  length = int(self.headers.get('Content-Length', 0))
+                  body = self.rfile.read(length)
+                  print('Received POST body:', body.decode('utf-8', errors='replace'), flush=True)
+                  self.send_response(200)
+                  self.send_header('Content-Type', 'application/json')
+                  self.end_headers()
+                  self.wfile.write(b'ok')
+              def log_message(self, fmt, *args):
+                  print(fmt % args, flush=True)
+
+          server = http.server.HTTPServer(('127.0.0.1', 9999), Handler)
+          t = threading.Thread(target=server.serve_forever)
+          t.daemon = True
+          t.start()
+          print('Mock server started on port 9999', flush=True)
+          # Keep alive for 60 seconds
+          import time
+          time.sleep(60)
+          " &
+          # Wait for server to be ready
+          for i in $(seq 1 10); do
+            if curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:9999/ | grep -q "200"; then
+              echo "Mock server is ready"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run action with success status
+        id: action
+        uses: .
+        with:
+          status: success
+          author_name: "Test Author"
+          fields: "repo,commit"
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: "http://127.0.0.1:9999/"
+
+      - name: Assert action succeeded
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected action to succeed with mock webhook, but got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action succeeded with success status and mock webhook"
