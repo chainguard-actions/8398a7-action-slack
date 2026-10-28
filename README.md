@@ -6,11 +6,11 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v3.17.0 | [`v3.17.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.17.0) | [`81cf33b`](https://github.com/8398a7/action-slack/commit/81cf33be7afd53f17fcd90faab001577731bf6dd) |
-| v3.18.0 | [`v3.18.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.18.0) | [`1750b50`](https://github.com/8398a7/action-slack/commit/1750b5085f3ec60384090fb7c52965ef822e869e) |
-| v3.19.0 | [`v3.19.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.19.0) | [`77eaa4f`](https://github.com/8398a7/action-slack/commit/77eaa4f1c608a7d68b38af4e3f739dcd8cba273e) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v3.17.0 | [`v3.17.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.17.0) | [`81cf33b`](https://github.com/8398a7/action-slack/commit/81cf33be7afd53f17fcd90faab001577731bf6dd) | [`HARDENING.md`](https://github.com/chainguard-actions/8398a7-action-slack/blob/v3.17.0/HARDENING.md) |
+| v3.18.0 | [`v3.18.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.18.0) | [`1750b50`](https://github.com/8398a7/action-slack/commit/1750b5085f3ec60384090fb7c52965ef822e869e) | [`HARDENING.md`](https://github.com/chainguard-actions/8398a7-action-slack/blob/v3.18.0/HARDENING.md) |
+| v3.19.0 | [`v3.19.0`](https://github.com/chainguard-actions/8398a7-action-slack/tree/v3.19.0) | [`77eaa4f`](https://github.com/8398a7/action-slack/commit/77eaa4f1c608a7d68b38af4e3f739dcd8cba273e) | [`HARDENING.md`](https://github.com/chainguard-actions/8398a7-action-slack/blob/v3.19.0/HARDENING.md) |
 
 ## Privacy
 
