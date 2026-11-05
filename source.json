@@ -4,8 +4,13 @@
   "version": "v3.19.0",
   "commit_sha": "77eaa4f1c608a7d68b38af4e3f739dcd8cba273e",
   "url": "https://github.com/8398a7/action-slack",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/8398a7/action-slack/v3.19.0/sha256-aed85c8f98e6c47ea70eb77d09e44a8a6bc3817bc183e1ba89f68d04dd09d8ef.tar.gz",
+    "sha256": "aed85c8f98e6c47ea70eb77d09e44a8a6bc3817bc183e1ba89f68d04dd09d8ef",
+    "size_bytes": 172977
+  }
 }
